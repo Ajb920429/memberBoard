@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+
+</head>
+<body>
+
+
+
+<!-- 수정 기능을 만들어봅시다. 수정화면(update.html)에서 비밀번호를 입력받고 일치하면 수정처리
+     일치하지 않으면 수정처리를 하지 않음.
+     수정 처리도 post방식(폼에서 바로 요청하는)
+                put방식(ajax를 이용하여 요청하는 ) 두가지로 모두 해봅시다.
+     수정이 완료되면 수정 후 상세페이지를 출력-->
+<table>
+    <thead>
+    <tr>
+        <th>번호</th>
+        <th>작성자</th>
+        <th>제목</th>
+        <th>비밀번호</th>
+        <th>작성일자</th>
+        <th>내용</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td th:text="${board.boardId}"></td>
+        <td th:text="${board.boardWriter}"></td>
+        <td th:text="${board.boardTitle}"></td>
+        <td th:text="${board.boardPassword}"></td>
+        <td th:text="${board.boardDate}"></td>
+        <td th:text="${board.boardContents}"></td>
+    </tr>
+    </tbody>
+</table>
+<a th:href="@{|/board/update/${board.boardId}|}">수정</a>
+<button>삭제</button>
+
+<div id="comment-write">
+    <input type="text" id="commentWriter" placeholder="작성자"><br>
+    <input type="text" id="commentContents" placeholder="내용"><br>
+    <button id="comment-writer-btn">댓글등록</button>
+</div>
+
+<div id="comment-area">
+    <table>
+        <thead>
+        <tr>
+            <th>댓글번호</th>
+            <th>작성자</th>
+            <th>내용</th>
+            <th>작성시간</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</div>
+
+</body>
+<script>
+    $("#comment-writer-btn").click(function (){
+        console.log('댓글등록 버튼 클릭');
+        const commentWriter = $("#commentWriter").val();
+        const commentContents = $("#commentContents").val();
+        const boardId = '[[${board.boardId}]]';
+        $.ajax({
+            type: 'post',
+            url: '/comment/save',
+            data: {
+                'commentWriter':commentWriter,
+                'commentContents':commentContents,
+                'boardId':boardId
+            },
+            dataType: 'json',
+            success: function (result) {
+                console.log(result);
+            },
+            error: function () {
+                alert('ajax 실패');
+            }
+        });
+    });
+</script>
+</html>
