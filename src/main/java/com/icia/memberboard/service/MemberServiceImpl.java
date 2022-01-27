@@ -8,6 +8,7 @@ import com.icia.memberboard.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,6 +72,15 @@ public class MemberServiceImpl implements MemberService{
         return memberId;
     }
 
+    @Override
+    public String emailDp(String memberEmail) {
+        MemberEntity emailCheckResult = mr.findByMemberEmail(memberEmail);
+        if (emailCheckResult ==null) {
+            return "ok";
+        }else {
+            return "no";
+        }
+    }
 
 
 }

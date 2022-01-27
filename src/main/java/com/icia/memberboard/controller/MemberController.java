@@ -65,6 +65,13 @@ public class MemberController {
         session.invalidate();
         return "index";
     }
+    // 이메일 중복 체크
+    @PostMapping("/emailDuplicate")
+    public @ResponseBody String emailDp(@RequestParam("memberEmail") String memberEmail){
+        String result = ms.emailDp(memberEmail);
+        return result;
+    }
+
 
     // 회원목록 요청
     @GetMapping
@@ -111,5 +118,13 @@ public class MemberController {
         Long memberId = ms.update(memberDetailDTO);
         return new ResponseEntity(HttpStatus.OK);
     }
+    // 관리자 페이지
+    @GetMapping("admin")
+    public String admin(){
+        return "member/admin";
+    }
+
+
+
 
 }

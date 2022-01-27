@@ -4,17 +4,30 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script>
+        function deleteById(boardId) {
+            console.log(boardId)
+            const reqUrl = "/board/"+boardId
+            $.ajax({
+                type: "delete",
+                url: reqUrl,
+                success: function () {
+                    console.log("ajax 성공")
+                    // 삭제 성공 시 회원목록 페이지를 다시 요청
+                    location.href = "/board/"
+                },
+                error: function () {
+                    alert("ajax 실패")
+                }
 
+            });
+        }
+
+    </script>
 </head>
 <body>
-
-
-
-<!-- 수정 기능을 만들어봅시다. 수정화면(update.html)에서 비밀번호를 입력받고 일치하면 수정처리
-     일치하지 않으면 수정처리를 하지 않음.
-     수정 처리도 post방식(폼에서 바로 요청하는)
-                put방식(ajax를 이용하여 요청하는 ) 두가지로 모두 해봅시다.
-     수정이 완료되면 수정 후 상세페이지를 출력-->
+<h2>findById.html</h2>
+<a href="/">홈</a>
 <table>
     <thead>
     <tr>
@@ -24,6 +37,7 @@
         <th>비밀번호</th>
         <th>작성일자</th>
         <th>내용</th>
+
     </tr>
     </thead>
     <tbody>
@@ -38,33 +52,35 @@
     </tbody>
 </table>
 <a th:href="@{|/board/update/${board.boardId}|}">수정</a>
-<button>삭제</button>
+<button th:onclick="deleteById([[${board.boardId}]])">삭제</button>
 
-<div id="comment-write">
-    <input type="text" id="commentWriter" placeholder="작성자"><br>
-    <input type="text" id="commentContents" placeholder="내용"><br>
-    <button id="comment-writer-btn">댓글등록</button>
-</div>
+<div id="comment-write"></div>
+<input type="text" id="commentWriter" placeholder="작성자">
+<input type="text" id="commentContents" placeholder="내용">
+<button id="comment-write-btn">댓글등록</button>
 
 <div id="comment-area">
     <table>
         <thead>
         <tr>
-            <th>댓글번호</th>
+            <th>번호</th>
             <th>작성자</th>
             <th>내용</th>
-            <th>작성시간</th>
+            <th>작성일자</th>
         </tr>
         </thead>
         <tbody>
-
+        <tr th:each="comment: ${commentList}">
+            <td th:text="${comment.commentId}"></td>
+            <td th:text="${comment.commentWriter}"</td>
+            <td th:text="${comment.commentContents}"></td>
+            <td th:text="${comment.createTime}"></td>
+        </tr>
         </tbody>
     </table>
 </div>
-
-</body>
 <script>
-    $("#comment-writer-btn").click(function (){
+    $("#comment-write-btn").click(function (){
         console.log('댓글등록 버튼 클릭');
         const commentWriter = $("#commentWriter").val();
         const commentContents = $("#commentContents").val();
@@ -73,13 +89,28 @@
             type: 'post',
             url: '/comment/save',
             data: {
-                'commentWriter':commentWriter,
-                'commentContents':commentContents,
-                'boardId':boardId
+                'commentWriter': commentWriter,
+                'commentContents': commentContents,
+                'boardId': boardId
             },
             dataType: 'json',
-            success: function (result) {
-                console.log(result);
+            success: function (result){
+                let output = "<table>";
+                output += "<tr><th>댓글번호</th>";
+                output += "<th>작성자</th>";
+                output += "<th>내용</th>";
+                output += "<th>작성시간</th></tr>";
+                for ( let i in result) {
+                    output += "<tr>";
+                    output += "<td>" + result[i].commentId + "</td>";
+                    output += "<td>" + result[i].commentWriter + "</td>";
+                    output += "<td>" + result[i].commentContents + "</td>";
+                    output += "<td>" + result[i].createTime + "</td>";
+                    output += "</tr>";
+                }
+                output += "</table>";
+                document.getElementById('comment-area').innerHTML = output;
+                document.getElementById('commentContents').value = '';
             },
             error: function () {
                 alert('ajax 실패');
@@ -87,4 +118,5 @@
         });
     });
 </script>
+</body>
 </html>
