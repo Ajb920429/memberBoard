@@ -54,7 +54,7 @@
         <td th:text="${board.boardHits}"></td>
         <td th:text="${board.boardFilename}"></td>
 <!--        <td><img alt="" th:src="@{|/uplord/${board.boardFilename}|}"></td>-->
-        <img alt="" th:src="@{'/uplord/'+${board.boardFilename}}">
+        <td><img alt="" th:src="@{|/upload/${board.boardFilename}|}"></td>
     </tr>
     </tbody>
 </table>

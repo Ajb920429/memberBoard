@@ -42,6 +42,7 @@ public class BoardController {
         return "index";
     }
 
+
     // 글목록 화면 요청
     @GetMapping("/")
     public String findAll(Model model) {
