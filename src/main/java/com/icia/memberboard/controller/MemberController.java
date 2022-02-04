@@ -1,21 +1,20 @@
 package com.icia.memberboard.controller;
 
+import com.icia.memberboard.dto.BoardSaveDTO;
 import com.icia.memberboard.dto.MemberDetailDTO;
 import com.icia.memberboard.dto.MemberLoginDTO;
 import com.icia.memberboard.dto.MemberSaveDTO;
-import com.icia.memberboard.entity.MemberEntity;
 import com.icia.memberboard.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.icia.memberboard.common.SessionConst.LOGIN_EMAIL;
@@ -118,11 +117,15 @@ public class MemberController {
         Long memberId = ms.update(memberDetailDTO);
         return new ResponseEntity(HttpStatus.OK);
     }
+
+
     // 관리자 페이지
     @GetMapping("admin")
     public String admin(){
+
         return "member/admin";
     }
+
 
 
 

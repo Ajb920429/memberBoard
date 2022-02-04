@@ -5,34 +5,6 @@
     <title>Title</title>
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script>
-        function emailDp(){
-
-            const email = document.getElementById("memberEmail").value;
-            const ECheck= document.getElementById("emailCheck");
-
-            $.ajax({
-                type: 'post',
-                url: '/member/emailDuplicate',
-                data: {"memberEmail":email},
-                dataType: 'text',
-                success:function(result){
-                    if(result=='ok'){
-                        ECheck.style.color='green';
-                        ECheck.innerHTML="GOOD";
-                    }else{
-                        ECheck.style.color='red';
-                        ECheck.innerHTML="중복된 이메일입니다."
-                    }
-                },
-                error: function (){
-                    alert('실패');
-                }
-            });
-        }
-
-
-    </script>
-    <script>
         const detail = (boardId) => {
             console.log(boardId);
             const reqUrl = "/board/" + boardId;
@@ -83,6 +55,7 @@
         <th>작성자</th>
         <th>작성일자</th>
         <th>상세조회(ajax)</th>
+        <th>조회수</th>
     </tr>
     </thead>
     <tbody>
@@ -96,12 +69,21 @@
         <td th:text="${board.boardWriter}"></td>
         <td th:text="${board.boardDate}"></td>
         <td><button th:onclick="detail([[${board.boardId}]])">상세조회(ajax)</button></td>
+        <td th:text="${board.boardHits}"></td>
         <!-- 제목 클릭하면 상세조회화면(findById.html) 출력           -->
         <!-- ajax를 이용한 상세조회를 해보자. 조회 버튼을 클릭하면 목록 아래에 해당 글의 상세 내용이 출력되도록. -->
 
     </tr>
     </tbody>
 </table>
+<form action="/board/search" method="get">
+    <select name="searchType">
+        <option th:value="boardTitle">제목</option>
+        <option th:value="boardWriter">작성자</option>
+    </select>
+    <input type="text" name="keyword" placeholder="검색어를 입력하세요">
+    <input type="submit" value="검색">
+</form>
 <div id="board-detail"></div>
 </body>
 </html>

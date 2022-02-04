@@ -15,11 +15,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService{
@@ -27,7 +31,15 @@ public class BoardServiceImpl implements BoardService{
     private final MemberRepository mr;
 
     @Override
-    public Long save(BoardSaveDTO boardSaveDTO) {
+    public Long save(BoardSaveDTO boardSaveDTO) throws IllegalStateException, IOException {
+        // 파일처리(파일 가져와서 저장하고, 이름 추출, 파일 이름 DTO 담아라
+        MultipartFile boardFile = boardSaveDTO.getBoardFile();
+        String boardFileName = boardFile.getOriginalFilename();
+        boardFileName = System.currentTimeMillis()+"-" +boardFileName;
+        boardSaveDTO.setBoardFilename(boardFileName);
+
+        String savePath = "C:\\development\\source\\springboot\\MemberBoardProject\\src\\main\\resources\\static\\upload\\"+boardFileName;
+        boardFile.transferTo(new File(savePath));
         MemberEntity memberEntity = mr.findByMemberEmail(boardSaveDTO.getBoardWriter());
         BoardEntity boardEntity = BoardEntity.toSaveEntity(boardSaveDTO, memberEntity);
         Long boardId = br.save(boardEntity).getId();
@@ -78,4 +90,39 @@ public class BoardServiceImpl implements BoardService{
         );
         return boardList;
     }
+
+    // 검색
+
+    @Override
+    public List<BoardDetailDTO> search(String searchType, String keyword) {
+
+        List<BoardEntity> boardEntity = null;
+
+        if (searchType.equals("boardTitle")){
+            System.out.println("title");
+            boardEntity = br.findByBoardTitleContaining(keyword);
+        }else if (searchType.equals("boardWriter")){
+            System.out.println("writer");
+            boardEntity = br.findByBoardWriterContaining(keyword);
+        }else {
+            System.out.println("contents");
+            boardEntity = br.findByBoardContentsContaining(keyword);
+            System.out.println("addafa"+boardEntity);
+        }
+
+        List<BoardDetailDTO> boardDetailDTOSList = new ArrayList<>();
+        for (BoardEntity b:boardEntity){
+            boardDetailDTOSList.add(BoardDetailDTO.toBoardDetailDTO(b));
+        }
+        return boardDetailDTOSList;
+
+    }
+
+    @Transactional
+    @Override
+    public void hits(Long boardId) {
+        br.hits(boardId);
+    }
+
+
 }

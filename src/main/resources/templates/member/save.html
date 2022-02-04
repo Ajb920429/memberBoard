@@ -35,13 +35,12 @@
 </head>
 <body>
 <h2>save.html</h2>
-<form action="/member/save" method="post" enctype="multipart/form-data">
+<form action="/member/save" method="post" >
     <input type="text" name="memberEmail" onblur="emailDp()" id="memberEmail" placeholder="이메일"><br>
     <span id="emailCheck"></span>
     <input type="text" name="memberPassword" placeholder="비밀번호"><br>
     <input type="text" name="memberName" placeholder="이름"><br>
     <input type="text" name="memberPhone" placeholder="전화번호"><br>
-    <!--    //<input type="file" name="memberFile">-->
     <input type="submit" value="회원가입">
 
 </form>

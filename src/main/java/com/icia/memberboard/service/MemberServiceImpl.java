@@ -1,5 +1,6 @@
 package com.icia.memberboard.service;
 
+import com.icia.memberboard.dto.BoardSaveDTO;
 import com.icia.memberboard.dto.MemberDetailDTO;
 import com.icia.memberboard.dto.MemberLoginDTO;
 import com.icia.memberboard.dto.MemberSaveDTO;
@@ -8,6 +9,7 @@ import com.icia.memberboard.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +83,8 @@ public class MemberServiceImpl implements MemberService{
             return "no";
         }
     }
+
+
 
 
 }

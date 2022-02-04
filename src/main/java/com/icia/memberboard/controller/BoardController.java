@@ -2,11 +2,9 @@ package com.icia.memberboard.controller;
 
 
 import com.icia.memberboard.common.PagingConst;
-import com.icia.memberboard.dto.BoardDetailDTO;
-import com.icia.memberboard.dto.BoardPagingDTO;
-import com.icia.memberboard.dto.BoardSaveDTO;
-import com.icia.memberboard.dto.BoardUpdateDTO;
+import com.icia.memberboard.dto.*;
 import com.icia.memberboard.service.BoardService;
+import com.icia.memberboard.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,6 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -26,16 +26,18 @@ import java.util.List;
 @Slf4j
 public class BoardController {
     private final BoardService bs;
+    private final CommentService cs;
 
     // 글쓰기 화면요청
     @GetMapping("/save")
     public String saveForm() {
         return "board/save";
     }
-
+    
     // 글쓰기 처리
     @PostMapping("/save")
-    public String save(@ModelAttribute BoardSaveDTO boardSaveDTO){
+    public String save(@ModelAttribute BoardSaveDTO boardSaveDTO) throws IOException {
+        System.out.println("boardSaveDTO = " + boardSaveDTO);
         Long boardId = bs.save(boardSaveDTO);
         return "index";
     }
@@ -49,12 +51,16 @@ public class BoardController {
         return "board/findAll";
     }
 
+
     // 글목록 조회
     @GetMapping("/{boardId}")
-    public String findById(Model model, @PathVariable Long boardId) {
+    public String findById(Model model, @PathVariable("boardId") Long boardId) {
         log.info("글보기 메서드 호출. 요청글 번호: {}", boardId);
+        bs.hits(boardId);
         BoardDetailDTO board = bs.findById(boardId);
+        List<CommentDetailDTO> commentList = cs.findAll(boardId);
         model.addAttribute("board", board);
+        model.addAttribute("commentList", commentList);
         return "board/findById";
     }
 
@@ -106,5 +112,38 @@ public class BoardController {
         model.addAttribute("endPage", endPage);
         return "board/paging";
     }
+
+    // 로그아웃 처리
+    @GetMapping("logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "index";
+    }
+
+    // 댓글 검색
+    @GetMapping("/search")
+    public String search(@RequestParam("searchType") String searchType, @RequestParam("keyword") String keyword, Model model) {
+        System.out.println("searchType1 = " + searchType);
+        System.out.println("keyword1 = " + keyword);
+
+        List<BoardDetailDTO> boardList = bs.search(searchType,keyword);
+        System.out.println("boardList" + boardList);
+
+        System.out.println("searchType2 = " + searchType);
+        System.out.println("keyword2 = " + keyword);
+
+        model.addAttribute("boardList",boardList);
+        System.out.println("boardList2 = " + boardList);
+
+        return "/board/findAll";
+    }
+
+
+
+
+
+
+
+
 
 }
